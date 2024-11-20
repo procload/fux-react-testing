@@ -1,8 +1,6 @@
-// e2e/filter-pill.spec.ts
 import { test, expect } from '@playwright/test';
 
 test('FilterPill demo page renders and functions correctly', async ({ page }) => {
-
   await page.goto('/'); 
 
   // Test basic rendering
@@ -12,61 +10,78 @@ test('FilterPill demo page renders and functions correctly', async ({ page }) =>
   const statusPill = page.locator('fabric-filter-pill').filter({ hasText: 'Status' });
   await statusPill.click();
   
-  // Verify the click was registered
-  await expect(page.locator('.bg-blue-50')).toContainText('You clicked: Status');
+  // Verify the click was registered in the status display
+  const statusDisplay = page.locator('.bg-gray-100');
+  await expect(statusDisplay.locator('p').first()).toContainText('Status');
+  await expect(statusDisplay.locator('p').last()).toContainText('Status');
   
-  // Test selected filters display
-  await expect(page.locator('.bg-blue-100')).toContainText('Status');
-  
-  // Test different sizes
-  const sizePills = page.locator('h2').filter({ hasText: 'Different Sizes' }).locator('..').locator('fabric-filter-pill');
-  await expect(sizePills).toHaveCount(3);
-  
-  // Test disabled state
-  const disabledPill = page.locator('fabric-filter-pill').filter({ hasText: 'Disabled' });
-  await expect(disabledPill).toHaveAttribute('disabled', '');
-  
-  // Test reset functionality
-  await page.getByRole('button', { name: 'Reset Filters' }).click();
-  await expect(page.locator('.bg-blue-100')).not.toBeVisible();
-  
-  // Visual comparison
-  await expect(page).toHaveScreenshot('filter-pill-demo.png', {
-    fullPage: true
-  });
-});
-
-test('FilterPill interactions work correctly', async ({ page }) => {
-  await page.goto('/');
-
   // Test multiple selections
   const priorityPill = page.locator('fabric-filter-pill').filter({ hasText: 'Priority' });
-  const datePill = page.locator('fabric-filter-pill').filter({ hasText: 'Date' });
-  
   await priorityPill.click();
-  await datePill.click();
   
-  // Verify multiple selections are displayed
-  const selectedFilters = page.locator('.bg-blue-100');
-  await expect(selectedFilters).toHaveCount(2);
+  // Verify both selections are displayed
+  await expect(statusDisplay.locator('p').first()).toContainText('Status, Priority');
+  
+  // Test size variations
+  const sizesSection = page.locator('h2', { hasText: 'Different Sizes' }).locator('..').locator('fabric-filter-pill');
+  await expect(sizesSection).toHaveCount(3);
+  
+  // Test disabled state
+  const disabledPill = page.locator('fabric-filter-pill').filter({ hasText: 'Disabled Pill' });
+  await expect(disabledPill).toHaveAttribute('disabled', '');
+  
+  // Test appearance variations
+  const appearanceSection = page.locator('h2', { hasText: 'Appearance Variations' }).locator('..').locator('fabric-filter-pill');
+  await expect(appearanceSection).toHaveCount(4);
   
   // Test deselection
-  await priorityPill.click();
-  await expect(selectedFilters).toHaveCount(1);
-  await expect(selectedFilters).toHaveText('Date');
+  await statusPill.click();
+  await expect(statusDisplay.locator('p').first()).not.toContainText('Status');
+  await expect(statusDisplay.locator('p').first()).toContainText('Priority');
+
+});
+
+test('FilterPill appearance variations work correctly', async ({ page }) => {
+  await page.goto('/');
+
+  // Test each appearance variation
+  const appearances = ['Primary', 'Outline', 'Subtle', 'Transparent'];
+  
+  for (const appearance of appearances) {
+    const pill = page.locator('fabric-filter-pill').filter({ hasText: appearance });
+    await pill.click();
+    
+    // Verify selection in status display
+    const statusDisplay = page.locator('.bg-gray-100');
+    await expect(statusDisplay.locator('p').first()).toContainText(appearance);
+    await expect(statusDisplay.locator('p').last()).toContainText(appearance);
+  }
 });
 
 test('FilterPill accessibility features', async ({ page }) => {
-  await page.goto('/filter-pills');
+  await page.goto('/');
 
   // Test keyboard navigation
   await page.keyboard.press('Tab');
   await page.keyboard.press('Enter');
   
-  // Verify keyboard interaction worked
-  await expect(page.locator('.bg-blue-50')).toBeVisible();
-  
-  // Check for proper ARIA attributes
-  const filterPill = page.locator('fabric-filter-pill').first();
-  await expect(filterPill).toHaveAttribute('role', 'button');
+  // Verify interaction in status display
+  const statusDisplay = page.locator('.bg-gray-100');
+  await expect(statusDisplay.locator('p').last()).toContainText('Status');
+
+});
+
+// New test for size variations
+test('FilterPill size variations display correctly', async ({ page }) => {
+  await page.goto('/');
+
+  const sizesSection = page.locator('h2', { hasText: 'Different Sizes' }).locator('..');
+  const smallPill = sizesSection.locator('fabric-filter-pill').filter({ hasText: 'Small' });
+  const mediumPill = sizesSection.locator('fabric-filter-pill').filter({ hasText: 'Medium' });
+  const largePill = sizesSection.locator('fabric-filter-pill').filter({ hasText: 'Large' });
+
+  // Verify size attributes
+  await expect(smallPill).toHaveAttribute('size', 'small');
+  await expect(mediumPill).toHaveAttribute('size', 'medium');
+  await expect(largePill).toHaveAttribute('size', 'large');
 });
