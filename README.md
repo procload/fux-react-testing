@@ -1,50 +1,120 @@
-# React + TypeScript + Vite
+# Fabric UX React Components Testing Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project demonstrates how to effectively test React-wrapped Fabric UX web components using Jest and React Testing Library. It showcases a practical approach to mocking Fabric components for unit testing.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The project uses a FilterPill component from the Fabric UX library (`@fabric-msft/fabric-react`) as an example. It demonstrates:
 
-## Expanding the ESLint configuration
+- Mocking Fabric components for testing
+- Setting up Jest with TypeScript
+- Writing comprehensive unit tests
+- Testing component interactions and state changes
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Project Structure
+src/
+├── mocks/
+│ └── fabric-components.tsx # Mocked Fabric components
+├── components/
+│ └── FilterPill/
+│ ├── FilterPill.test.tsx # Component tests
+│ ├── FilterPillDemo.tsx # Demo component
+│ └── FilterPillDemo.test.tsx # Demo component tests
+└── setupTests.ts # Test setup configuration
 
-- Configure the top-level `parserOptions` property like this:
+## Setup
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+1. Install dependencies:
+```bash
+npm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+2. Run tests:
+```bash
+npm test
 ```
+
+## Testing Strategy
+
+### Component Mocking
+
+The project demonstrates how to mock Fabric components by creating simplified versions that maintain the same API but are easier to test. See `src/__mocks__/fabric-components.tsx` for the implementation.
+
+Example mock:
+
+```typescript
+export const FilterPill: React.FC<FilterPillProps> = ({
+  shape = 'rounded',
+  size = 'medium',
+  disabled = false,
+  children,
+  onClick,
+  selected = false,
+  appearance = 'primary'}) => {
+    return (
+      <div
+        data-testid="mock-filter-pill"
+        onClick={disabled ? undefined : onClick}
+        data-shape={shape}
+        data-size={size}
+        data-disabled={disabled}
+        data-selected={selected}
+        data-appearance={appearance}
+      >
+        {children}
+    </div>
+  );
+};
+```
+### Test Coverage
+
+The tests cover:
+- Default prop rendering
+- Event handling
+- Component states (disabled, selected)
+- Visual variations (shape, size, appearance)
+- Child component rendering
+- State management
+- User interactions
+
+## Key Files
+
+- `jest.config.js`: Jest configuration including module mapping
+- `src/__mocks__/fabric-components.tsx`: Mocked components
+- `src/components/FilterPill/FilterPill.test.tsx`: Component unit tests
+- `src/setupTests.ts`: Test environment setup
+
+## Technologies Used
+
+- React 18
+- TypeScript
+- Jest
+- React Testing Library
+- @fabric-msft/fabric-react
+- Vite
+
+## Best Practices Demonstrated
+
+1. **Component Mocking**: Simplified mock components that maintain the same API
+2. **Data Attributes**: Using data-* attributes for testing
+3. **Test Organization**: Clear test structure and descriptions
+4. **Comprehensive Coverage**: Testing all component variations and states
+5. **Type Safety**: Full TypeScript support in tests
+
+## Running the Demo
+
+To see the components in action:
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:5173` to view the demo.
+
+## Contributing
+
+Feel free to submit issues and enhancement requests.
+
+## License
+
+[MIT License](LICENSE)
