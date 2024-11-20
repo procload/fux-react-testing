@@ -12,6 +12,7 @@ The project uses a FilterPill component from the Fabric UX library (`@fabric-msf
 - Testing component interactions and state changes
 
 ## Project Structure
+```
 src/
 ├── mocks/
 │ └── fabric-components.tsx # Mocked Fabric components
@@ -21,6 +22,7 @@ src/
 │ ├── FilterPillDemo.tsx # Demo component
 │ └── FilterPillDemo.test.tsx # Demo component tests
 └── setupTests.ts # Test setup configuration
+```
 
 ## Setup
 
